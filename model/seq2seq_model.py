@@ -13,8 +13,8 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 import random
 
 import tensorflow as tf
-from tensorflow.models.rnn import rnn_cell
-from tensorflow.models.rnn import seq2seq
+rnn_cell = tf.contrib.rnn
+seq2seq = tf.contrib.legacy_seq2seq # tf.nn.seq2seq
 
 from data import data_utils
 
@@ -75,10 +75,10 @@ class Seq2SeqModel(object):
         b = tf.get_variable("proj_b", [self.vocab_size])
       output_projection = (w, b)
 
-      def sampled_loss(inputs, labels):
+      def sampled_loss(labels, inputs):
         with tf.device("/cpu:0"):
           labels = tf.reshape(labels, [-1, 1])
-          return tf.nn.sampled_softmax_loss(w_t, b, inputs, labels, num_samples,
+          return tf.nn.sampled_softmax_loss(w_t, b, labels, inputs, num_samples,
                                             self.vocab_size)
       softmax_loss_function = sampled_loss
 
@@ -93,10 +93,10 @@ class Seq2SeqModel(object):
     # The seq2seq function: we use embedding for the input and attention (if applicable).
     if model_type is 'embedding_attention':
       def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
-        return seq2seq.embedding_attention_seq2seq(encoder_inputs, decoder_inputs, cell, vocab_size, vocab_size, output_projection=output_projection, feed_previous=do_decode)
+        return seq2seq.embedding_attention_seq2seq(encoder_inputs, decoder_inputs, cell, num_encoder_symbols=vocab_size, num_decoder_symbols=vocab_size, embedding_size=size, output_projection=output_projection, feed_previous=do_decode)
     else: # just build embedding model, I should probably change this to throw an error
       def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
-        return seq2seq.embedding_rnn_seq2seq(encoder_inputs, decoder_inputs, cell, vocab_size, vocab_size, output_projection=output_projection, feed_previous=do_decode)
+        return seq2seq.embedding_rnn_seq2seq(encoder_inputs, decoder_inputs, cell, num_encoder_symbols=vocab_size, num_decoder_symbols=vocab_size, embedding_size=size, output_projection=output_projection, feed_previous=do_decode)
 
     # Feeds for inputs.
     self.encoder_inputs = []
@@ -140,7 +140,7 @@ class Seq2SeqModel(object):
       else:
         self.outputs, self.losses = seq2seq.model_with_buckets(
             self.encoder_inputs, self.decoder_inputs, targets,
-            self.target_weights, self.buckets, self.vocab_size,
+            self.target_weights, self.buckets, #self.vocab_size,
             lambda x, y: seq2seq_f(x, y, False),
             softmax_loss_function=softmax_loss_function)
 

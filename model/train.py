@@ -40,6 +40,8 @@ def read_data(data_path, max_size=None):
         prompt and response are lists of token-ids.
   """
   data_set = [[] for _ in buckets] if params.buckets else []
+  print("Opening data set %s" % (data_path))
+  sys.stdout.flush()
   with gfile.GFile(data_path, mode="r") as data_file:    
     # Response line is line after prompt line
     prompt, response = data_file.readline(), data_file.readline()
@@ -87,8 +89,8 @@ def train():
     model = model_utils.create_model(sess, False)
 
     # Set up event logging. NOTE: added this, this is not finished
-    merged_summaries = tf.merge_all_summaries()
-    # writer = tf.train.SummaryWriter(params.train_dir, sess.graph_def)
+    merged_summaries = tf.summary.merge_all()
+    # writer = tf.summary.FileWriter(params.train_dir, sess.graph_def)
 
     # Read data into buckets and compute their sizes.
     print ("Reading development and training data (limit: %d)." % params.max_train_data_size)
@@ -148,7 +150,7 @@ def train():
         )
         previous_losses.append(loss)
         # Save checkpoint and zero timer and loss.
-        checkpoint_path = os.path.join(params.train_dir, "speakEasy_vocab%d_size%d_%s.ckpt" % params.vocab_size, params.size, params.train_data)
+        checkpoint_path = os.path.join(params.train_dir, "speakEasy_vocab%d_size%d_%s.ckpt" % (params.vocab_size, params.size, params.train_data))
         model.saver.save(sess, checkpoint_path, global_step=model.global_step)
         step_time, loss = 0.0, 0.0
 

@@ -70,7 +70,7 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, normalize
       vocab_list = _START_VOCAB + sorted(vocab, key=vocab.get, reverse=True)
       with gfile.GFile(vocabulary_path + 'complete', mode="w") as master_file:
         for w in sorted(vocab, key=vocab.get, reverse=True):
-          master_file.write(w + ': ' + vocab[w] + '\n') 
+          master_file.write('%s: %s\n' % (w, vocab[w])) 
       if len(vocab_list) > max_vocabulary_size:
         vocab_list = vocab_list[:max_vocabulary_size]
       with gfile.GFile(vocabulary_path, mode="w") as vocab_file:
