@@ -7,7 +7,8 @@ import tensorflow as tf
 import os
 
 #Only relevant if using bucketed model
-buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
+# buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
+buckets = [(5, 15), (10, 35), (20, 75), (40, 260)]
 
 # Training params
 tf.app.flags.DEFINE_float("learning_rate", 0.5, "Learning rate.")
@@ -25,7 +26,7 @@ tf.app.flags.DEFINE_boolean("buckets", True, "Implement the model with buckets")
 tf.app.flags.DEFINE_integer("max_sentence_length", 50, "Maximum sentence length for model WITHOUT buckets")
 
 # Data params
-tf.app.flags.DEFINE_integer("max_train_data_size", 10, "Limit on the size of training data (0: no limit).")
+tf.app.flags.DEFINE_integer("max_train_data_size", 0, "Limit on the size of training data (0: no limit).")
 
 # Directories
 tf.app.flags.DEFINE_string("data_dir", "/tmp", "Data directory.")

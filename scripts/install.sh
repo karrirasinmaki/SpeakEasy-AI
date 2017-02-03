@@ -2,7 +2,7 @@
 # Sets up the Python operating environment.
 
 TENSORFLOW_PACKAGE=""
-TENSORFLOW_VERSION="1.0.0rc"
+TENSORFLOW_VERSION="1.0.0rc0"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   echo "Do you want GPU support? [y/n]"

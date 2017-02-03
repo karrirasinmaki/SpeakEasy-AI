@@ -8,8 +8,8 @@ ROBOT_NAME=MARVIN
 
 
 NUM_LAYERS=3
-SIZE=128 #762
+SIZE=762
 VOCAB_SIZE=1000
-MAX_TRAIN_DATA_SIZE=100 #0
+MAX_TRAIN_DATA_SIZE=0
 
-venv/bin/python speak_easy.py --nobuckets --num_layers $NUM_LAYERS --size $SIZE --vocab_size $VOCAB_SIZE ---max_train_data_size $MAX_TRAIN_DATA_SIZE --train_dir $TRAIN_DIR --data_dir $DATA_DIR --log_dir $LOG_DIR $@
+venv/bin/python speak_easy.py --num_layers $NUM_LAYERS --size $SIZE --vocab_size $VOCAB_SIZE ---max_train_data_size $MAX_TRAIN_DATA_SIZE --train_dir $TRAIN_DIR --data_dir $DATA_DIR --log_dir $LOG_DIR $@

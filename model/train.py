@@ -77,6 +77,8 @@ def train():
   sys.stdout.flush()
   data_train, data_dev, _ = data_utils.prepare_data(params.data_dir, params.vocab_size)
 
+  _buckets = params.buckets
+
   # config = tf.ConfigProto()
   # config.gpu_options.allocator_type = 'BFC'
   # with tf.Session(config=config) as sess:
@@ -110,8 +112,10 @@ def train():
     step_time, loss = 0.0, 0.0
     current_step = 0
     previous_losses = []
-    while True:
-    # while current_step <= epoch * 7.5:
+    # while True:
+    while current_step <= epoch * 7.5:
+      print("Training loop, round %d" % current_step)
+      sys.stdout.flush()
       # Get a batch and make a step.
       start_time = time.time()
 
