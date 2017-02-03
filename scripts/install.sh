@@ -13,7 +13,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
   if [[ "$use_gpu" == "y" || "$use_gpu" == "Y" ]]; then
     echo "Using GPU!!!"
-    TENSORFLOW_PACKAGE=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-${TENSORFLOW_VERSION}-cp27-none-linux_x86_64.whl
+    TENSORFLOW_PACKAGE=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-${TENSORFLOW_VERSION}-cp27-none-linux_x86_64.whl
   fi
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
