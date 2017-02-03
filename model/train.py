@@ -150,7 +150,7 @@ def train():
         )
         previous_losses.append(loss)
         # Save checkpoint and zero timer and loss.
-        checkpoint_path = os.path.join(params.train_dir, "speakEasy_vocab%d_size%d_%s.ckpt" % (params.vocab_size, params.size, params.train_data))
+        checkpoint_path = os.path.join(params.train_dir, "speakEasy_vocab%d_size%d.ckpt" % (params.vocab_size, params.size))
         model.saver.save(sess, checkpoint_path, global_step=model.global_step)
         step_time, loss = 0.0, 0.0
 

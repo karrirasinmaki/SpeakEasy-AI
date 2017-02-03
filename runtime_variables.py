@@ -25,7 +25,7 @@ tf.app.flags.DEFINE_boolean("buckets", True, "Implement the model with buckets")
 tf.app.flags.DEFINE_integer("max_sentence_length", 50, "Maximum sentence length for model WITHOUT buckets")
 
 # Data params
-tf.app.flags.DEFINE_integer("max_train_data_size", 100, "Limit on the size of training data (0: no limit).")
+tf.app.flags.DEFINE_integer("max_train_data_size", 10, "Limit on the size of training data (0: no limit).")
 
 # Directories
 tf.app.flags.DEFINE_string("data_dir", "/tmp", "Data directory.")
