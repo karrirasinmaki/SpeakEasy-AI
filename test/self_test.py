@@ -26,8 +26,8 @@ def self_test():
         bucket_id = random.choice([0, 1])
         encoder_inputs, decoder_inputs, target_weights = model.get_batch(data_set, bucket_id=bucket_id)
         print(encoder_inputs, "AFTER BATCH")
-        model.step(sess, encoder_inputs, decoder_inputs, target_weights, True, bucket_id=bucket_id)
+        model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, True)
       else:
         encoder_inputs, decoder_inputs, target_weights = model.get_batch(data_set, bucket_id=None)
-        model.step(sess, encoder_inputs, decoder_inputs, target_weights, True, bucket_id=None)
+        model.step(sess, encoder_inputs, decoder_inputs, target_weights, None, True)
     print('Test successful!')

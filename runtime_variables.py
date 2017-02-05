@@ -8,7 +8,8 @@ import os
 
 #Only relevant if using bucketed model
 # buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
-buckets = [(5, 15), (10, 35), (20, 75), (40, 260)]
+# buckets = [(5, 10), (10, 25), (25, 60), (60, 145), (145, 350)]
+buckets = [(10, 30), (30, 100)]
 
 # Training params
 tf.app.flags.DEFINE_float("learning_rate", 0.5, "Learning rate.")
