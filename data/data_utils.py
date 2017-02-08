@@ -118,6 +118,7 @@ def sentence_to_token_ids(sentence, vocabulary,
     normalize_digits: Boolean; if true, all digits are replaced by 0s.
   Returns:
     a list of integers, the token-ids for the sentence.
+    number of _UNK tokens
   """
   if tokenizer:
     words = tokenizer(sentence)
@@ -126,13 +127,14 @@ def sentence_to_token_ids(sentence, vocabulary,
   if words == 'breakHerePlease':
     return [words]
   if not normalize_digits:
-    print([vocabulary.get(w, UNK_ID) for w in words])
-    return [vocabulary.get(w, UNK_ID) for w in words]
-  # Normalize digits by 0 before looking words up in the vocabulary.
-  return [vocabulary.get(re.sub(_DIGIT_RE, "0", w), UNK_ID) for w in words]
+    out = [vocabulary.get(w, UNK_ID) for w in words]
+  else:
+    # Normalize digits by 0 before looking words up in the vocabulary.
+    out = [vocabulary.get(re.sub(_DIGIT_RE, "0", w), UNK_ID) for w in words]
+  return out, out.count(UNK_ID)
 
 
-def data_to_token_ids(data_path, target_path, vocabulary_path, normalize_digits=False):
+def data_to_token_ids(data_path, target_path, vocabulary_path, tokenizer=None, normalize_digits=False):
   """Tokenize data file and turn into token-ids using given vocabulary file.
   This function loads data line-by-line from data_path, calls the above
   sentence_to_token_ids, and saves the result to target_path. See comment
@@ -151,12 +153,17 @@ def data_to_token_ids(data_path, target_path, vocabulary_path, normalize_digits=
     with gfile.GFile(data_path, mode="r") as data_file:
       with gfile.GFile(target_path, mode="w") as tokens_file:
         counter = 0
+        unk_counter = 0
+        token_counter = 0
         for line in data_file:
           counter += 1
           if counter % 100000 == 0:
             print("  tokenizing line %d" % counter)
-          token_ids = sentence_to_token_ids(line, vocab, normalize_digits)
+          token_ids, unk_count = sentence_to_token_ids(line, vocab, tokenizer, normalize_digits)
           tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
+          unk_counter += unk_count
+          token_counter += len(token_ids)
+        print("_UNK tokens: %d/%d = %f" % (unk_counter, token_counter, unk_counter/token_counter))
 
 
 def prepare_data(data_dir, vocabulary_size):

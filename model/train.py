@@ -67,8 +67,7 @@ def read_data(data_path, max_size=None):
           if len(prompt_ids) <= params.max_sentence_length and len(response_ids) <= params.max_sentence_length:
             data_set.append([prompt_ids, response_ids])
       prompt, response = data_file.readline(), data_file.readline()
-    epoch = counter / params.batch_size
-  return data_set, epoch
+  return data_set
 
 def train():
   slack.connection.notify(
@@ -103,8 +102,8 @@ def train():
     # Read data into buckets and compute their sizes.
     print ("Reading development and training data (limit: %d)." % params.max_train_data_size)
     sys.stdout.flush()
-    dev_set, _ = read_data(data_dev)
-    train_set, epoch = read_data(data_train, params.max_train_data_size)
+    dev_set = read_data(data_dev)
+    train_set = read_data(data_train, params.max_train_data_size)
 
     if params.buckets:
       train_bucket_sizes = [len(train_set[b]) for b in xrange(len(buckets))]
@@ -120,10 +119,9 @@ def train():
     previous_losses = []
     keep_training = True
     # while True:
-    # while current_step <= epoch * 7.5:
     while keep_training:
-      if (current_step % 10 == 0):
-        print("Training, step %d" % (current_step,))
+      if (current_step % 100 == 0):
+        print("Training, step %d and counting..." % (current_step,))
         sys.stdout.flush()
       # Get a batch and make a step.
       start_time = time.time()
@@ -137,28 +135,29 @@ def train():
         _, step_loss, _ = model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, False)
       else:
         encoder_inputs, decoder_inputs, target_weights = model.get_batch(train_set, bucket_id=None)
-        _, step_loss, _ = model.step(sess, encoder_inputs, decoder_inputs, target_weights, None, False)
+        _, step_loss, _ = model.step(sess, encoder_inputs, decoder_inputs, target_weights, 0, False)
       step_time += (time.time() - start_time) / params.steps_per_checkpoint
       loss += step_loss / params.steps_per_checkpoint
       current_step += 1
 
-      if current_step % epoch == 0 and current_step >= epoch * 5:
-        sess.run([model.learning_rate_decay_op])
       # Once in a while, we save checkpoint, print statistics, and run evals.
       if current_step % params.steps_per_checkpoint == 0:
         # Print statistics for the previous epoch.
         perplexity = math.exp(loss) if loss < 300 else float('inf')
-        log_line = ("global step %d learning rate %.4f step-time %.2f perplexity %.2f" % 
+        log_line = ("global step %d learning rate %.4f step-time %.2f perplexity %.2f" %
             (model.global_step.eval(), model.learning_rate.eval(), step_time, perplexity))
         print(log_line)
         sys.stdout.flush()
         slack.connection.notify(
           text=log_line,
         )
+        # Decrease learning rate if no improvement was seen over last 3 times.
+        if len(previous_losses) > 2 and loss > max(previous_losses[-3:]):
+          sess.run(model.learning_rate_decay_op)
         previous_losses.append(loss)
         # Save checkpoint and zero timer and loss.
         checkpoint_path = os.path.join(params.train_dir, "speakEasy_vocab%d_size%d.ckpt" % (params.vocab_size, params.size))
-        #model.saver.save(sess, checkpoint_path, global_step=model.global_step)
+        model.saver.save(sess, checkpoint_path, global_step=model.global_step)
         step_time, loss = 0.0, 0.0
 
         print("saved")

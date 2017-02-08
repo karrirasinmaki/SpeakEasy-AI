@@ -30,7 +30,7 @@ class ChatBot(object):
       A string that represents the bot's response.  
     """
         # Get token-ids for the input sentence.
-    token_ids = data_utils.sentence_to_token_ids(sentence, self.vocab)
+    token_ids, _ = data_utils.sentence_to_token_ids(sentence, self.vocab)
     try:
       # Which bucket does it belong to?
       bucket_id = min([b for b in xrange(len(self.model.buckets)) if self.model.buckets[b][0] > len(token_ids)])
